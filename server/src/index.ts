@@ -1,23 +1,33 @@
+// src/index.ts
 import express from 'express';
-import pgPromise from 'pg-promise';
-
-const pgp = pgPromise();
-const db = pgp('postgres://postgres:12sakib45@localhost:5432/MealManagement');
+import { errorHandler } from './middleware/errorMiddleware';
+import routes from './routes';
+import sequelize from './config/database';
 
 const app = express();
 const port = 8080;
 
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Routes
+app.use('/api', routes);
+
+// Error handling middleware
+app.use(errorHandler);
+
 // Check database connection
-db.connect()
-  .then(obj => {
-    obj.done(); // success, release the connection
+sequelize
+  .authenticate()
+  .then(() => {
     console.log('Database connected successfully.');
+
+    // Start server
+    app.listen(port, () => {
+      console.log(`Server is running on http://localhost:${port}`);
+    });
   })
-  .catch(error => {
-    console.log('ERROR:', error.message || error);
+  .catch((error: Error) => {
+    console.error('Unable to connect to the database:', error);
   });
-
-
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
