@@ -7,7 +7,7 @@ import crypto from 'crypto';
 const defaultSecretKey = crypto.randomBytes(32).toString('hex');
 
 export async function signup(req: Request, res: Response) {
-    const { username, email, password } = req.body;
+    const { username,name, email, password } = req.body;
   
     try {
         if (!username || !email || !password ) {
@@ -27,6 +27,7 @@ export async function signup(req: Request, res: Response) {
       // Create a new user instance with all required attributes
       const newUser = await User.create({
         username,
+        name,
         email,
         password: hashedPassword,
       });

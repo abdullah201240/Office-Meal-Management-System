@@ -1,9 +1,10 @@
 import { DataTypes, Model } from 'sequelize';
-import db from '../config/database'; 
+import db from '../config/database';
 
 interface UserAttributes {
   id?: number;
   username: string;
+  name: string; 
   email: string;
   password: string;
 }
@@ -13,6 +14,7 @@ class User extends Model<UserAttributes> implements UserAttributes {
   public username!: string;
   public email!: string;
   public password!: string;
+  public name!: string; 
 }
 
 User.init(
@@ -26,6 +28,10 @@ User.init(
     username: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: true, 
     },
     email: {
       type: DataTypes.STRING,
@@ -41,7 +47,7 @@ User.init(
     sequelize: db,
     modelName: 'User',
     tableName: 'users',
-    timestamps: true, // Enable timestamps if you have added createdAt and updatedAt columns to the table
+    timestamps: true,
   }
 );
 
