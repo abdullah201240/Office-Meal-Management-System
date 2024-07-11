@@ -1,9 +1,7 @@
-// src/index.ts
 import express from 'express';
 import { errorHandler } from './middleware/errorMiddleware';
 import routes from './routes';
 import db from './config/database';
-import User from './models/user'; // Import your Sequelize model(s) here
 
 const app = express();
 const port = 8080;
