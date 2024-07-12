@@ -7,6 +7,7 @@ import ProtectedRoute from './ProtectedRoute';
 import AdminLogin from './admin/Login';
 import AdminHome from './admin/Home';
 import AdminProtectedRoute from './AdminProtectedRoute';
+import AddEmployee from './admin/AddEmployee';
 
 
 export default function NavigationStack() {
@@ -38,6 +39,18 @@ export default function NavigationStack() {
             </>
           }
         />
+        <Route
+          path="/admin/add-employee"
+          element={
+            <>
+              
+              <AdminProtectedRoute>
+                <AddEmployee />
+              </AdminProtectedRoute>
+            </>
+          }
+        />
+        
         <Route path='*' element={<Navigate to="/main" />} />
       </Routes>
     </div>

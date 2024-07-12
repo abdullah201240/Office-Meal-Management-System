@@ -3,16 +3,23 @@ import { useAppDispatch } from '../hooks/adminLogin';
 import { clearAdminAuth } from '../redux/adminAuthSlice';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
+import { useUsersQuery } from '../api/viewAllUser'; 
 import '../../assets/css/Style.css';
+import { adminMenuItems } from './AdminMenuItems'; 
 
-const AdminHome: React.FC = () => {
+
+export default function Home () {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  const { data: users, isLoading, isError, error } = useUsersQuery(); 
 
   const handleLogout = () => {
     dispatch(clearAdminAuth());
     navigate('/adminLogin');
   };
+  const menuItems = [...adminMenuItems, { name: 'Logout', onClick: handleLogout }];
+
 
   const handleUpdate = (userId: string) => {
     // Logic for updating user with ID userId
@@ -23,26 +30,12 @@ const AdminHome: React.FC = () => {
     // Logic for deleting user with ID userId
     console.log(`Deleting user with ID: ${userId}`);
   };
-
-  const adminMenuItems = [
-    { name: 'Home', link: '/adminHome' },
-    { name: 'Add Employee', link: '/admin/add-employee' },
-    { name: 'Add Items', link: '/admin/add-items' },
-    { name: 'View Items', link: '/admin/view-items' },
-    { name: 'Order List', link: '/admin/order-list' },
-    { name: 'Profile', link: '/admin/profile' },
-    { name: 'Logout', onClick: handleLogout } 
-  ];
-
-  const users = [
-    { id: '1', name: 'Mark Otto', username: '@mdo', email: 'mark@example.com' },
-    { id: '2', name: 'Jacob Thornton', username: '@fat', email: 'jacob@example.com' },
-    { id: '3', name: 'Larry the Bird', username: '@twitter', email: 'larry@example.com' },
-  ];
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error: {error.message}</div>;
 
   return (
     <div className='background-radial-gradient'>
-      <Navbar menuItems={adminMenuItems} />
+       <Navbar menuItems={menuItems} />
       
       <div className="admin-content">
         <h1 style={{ color: 'white', textAlign: 'center' }}>All User List</h1>
@@ -58,7 +51,7 @@ const AdminHome: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {users.map((user, index) => (
+            {users.map((user: any, index: number) => (
               <tr key={user.id}>
                 <th scope="row">{index + 1}</th>
                 <td>{user.name}</td>
@@ -87,4 +80,3 @@ const AdminHome: React.FC = () => {
   );
 };
 
-export default AdminHome;
