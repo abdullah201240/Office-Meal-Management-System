@@ -2,9 +2,10 @@ import express from 'express';
 import { errorHandler } from './middleware/errorMiddleware';
 import routes from './routes';
 import db from './config/database';
-
+const cors = require('cors');
 const app = express();
 const port = 8080;
+app.use(cors());
 
 // Middleware
 app.use(express.json());
