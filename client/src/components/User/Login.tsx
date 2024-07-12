@@ -1,14 +1,33 @@
 import React, { useState } from 'react';
-import '../../assets/css/Style.css'; // Import your CSS file
-import { useLogin } from '../hooks/useLogin'; // Adjust the path as needed
+import { useMutation } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../hooks/useLogin';
+import { setAuth } from '../redux/authSlice';
+import { loginUser } from '../api/authApi';
+import '../../assets/css/Style.css';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const loginMutation = useLogin();
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const loginMutation = useMutation({
+    mutationFn: loginUser,
+    onSuccess: (data) => {
+      dispatch(setAuth({ token: data.token, email: data.email }));
+      navigate('/home');
+    },
+    onError: (error: any) => {
+      setErrorMessage(error.response?.data?.error || 'An error occurred');
+      
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrorMessage(''); 
     loginMutation.mutate({ email, password });
   };
 
@@ -54,11 +73,11 @@ export default function Login() {
                     <label className="form-label" htmlFor="form3Example4">Password</label>
                   </div>
 
+                  {errorMessage && <div className="alert alert-danger" role="alert">{errorMessage}</div>}
+
                   <button type="submit" className="btn btn-primary btn-block mb-4" disabled={loginMutation.status === 'pending'}>
                     {loginMutation.status === 'pending' ? 'Logging in...' : 'Login'}
                   </button>
-
-                  {loginMutation.isError && <div className="alert alert-danger">{(loginMutation.error as Error).message}</div>}
                 </form>
               </div>
             </div>

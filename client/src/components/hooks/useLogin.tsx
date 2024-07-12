@@ -1,8 +1,5 @@
-import { useMutation, UseMutationResult } from '@tanstack/react-query';
-import login, { LoginResponse, LoginVariables } from '../api/login'; // Adjust the import path as necessary
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import type { RootState, AppDispatch } from '../redux/store';
 
-export const useLogin = (): UseMutationResult<LoginResponse, Error, LoginVariables> => {
-  return useMutation<LoginResponse, Error, LoginVariables>({
-    mutationFn: login,
-  });
-};
+export const useAppDispatch: () => AppDispatch = useDispatch;
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
