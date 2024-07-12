@@ -70,7 +70,7 @@ export async function login(req: Request, res: Response) {
     const token = jwt.sign({ adminId: admin.id }, defaultSecretKey, { expiresIn: '1h' });
 
     // Respond with token
-    res.status(200).json({ message: 'Login successful', token });
+    res.status(200).json({ message: 'Login successful', token,email });
   } catch (error) {
     console.error('Error logging in:', error);
     res.status(500).json({ error: 'Failed to login' });
