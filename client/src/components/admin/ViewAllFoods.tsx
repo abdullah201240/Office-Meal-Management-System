@@ -1,32 +1,83 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAppDispatch } from '../hooks/adminLogin';
 import { clearAdminAuth } from '../redux/adminAuthSlice';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
-import { useFoodsQuery } from '../api/ViewAllFoodApi'; 
+import { useFoodsQuery } from '../api/ViewAllFoodApi';
 import '../../assets/css/Style.css';
-import { adminMenuItems } from './AdminMenuItems'; 
-import {API} from '../../config'
+import { adminMenuItems } from './AdminMenuItems';
+import { API } from '../../config';
+import axios from 'axios';
+import { Modal, Button, Form } from 'react-bootstrap';
 
 export default function ViewAllFoods() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { data: foods, isLoading, isError, error, refetch } = useFoodsQuery();
 
-  const { data: foods, isLoading, isError, error } = useFoodsQuery(); 
+  const [showModal, setShowModal] = useState(false);
+  const [selectedFood, setSelectedFood] = useState<any>(null);
+  const [updatedFood, setUpdatedFood] = useState({
+    foodMenu: '',
+    type: '',
+    price: '',
+    day: '',
+    foodImage: null,
+  });
 
   const handleLogout = () => {
     dispatch(clearAdminAuth());
     navigate('/adminLogin');
   };
-  
+
   const menuItems = [...adminMenuItems, { name: 'Logout', onClick: handleLogout }];
 
-  const handleUpdate = (foodId: string) => {
-    console.log(`Updating food with ID: ${foodId}`);
+  const handleUpdate = (food: any) => {
+    setSelectedFood(food);
+    setUpdatedFood({
+      foodMenu: food.foodMenu,
+      type: food.type,
+      price: food.price,
+      day: food.day,
+      foodImage: null,
+    });
+    setShowModal(true);
   };
 
-  const handleDelete = (foodId: string) => {
-    console.log(`Deleting food with ID: ${foodId}`);
+  const handleDelete = async (foodId: string) => {
+    try {
+      await axios.delete(`${API}api/admin/delete-food-item/${foodId}`);
+      refetch();
+    } catch (error) {
+      console.error('Error deleting food item:', error);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, files } = e.target;
+    setUpdatedFood((prev) => ({
+      ...prev,
+      [name]: files ? files[0] : value,
+    }));
+  };
+
+  const handleFormSubmit = async () => {
+    const formData = new FormData();
+    formData.append('foodMenu', updatedFood.foodMenu);
+    formData.append('type', updatedFood.type);
+    formData.append('price', updatedFood.price);
+    formData.append('day', updatedFood.day);
+    if (updatedFood.foodImage) {
+      formData.append('foodImage', updatedFood.foodImage);
+    }
+
+    try {
+      await axios.put(`${API}api/admin/update-food-item/${selectedFood.id}`, formData);
+      setShowModal(false);
+      refetch();
+    } catch (error) {
+      console.error('Error updating food item:', error);
+    }
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -54,6 +105,7 @@ export default function ViewAllFoods() {
             {foods.map((food: any, index: number) => (
               <tr key={food.id}>
                 <th scope="row">{index + 1}</th>
+
                 <td>{food.foodMenu}</td>
                 <td>{food.type}</td>
                 <td>{food.price}</td>
@@ -62,7 +114,7 @@ export default function ViewAllFoods() {
                 <td className="btn-group">
                   <button
                     className="btn btn-primary btn-sm"
-                    onClick={() => handleUpdate(food.id)}
+                    onClick={() => handleUpdate(food)}
                   >
                     Update
                   </button>
@@ -78,6 +130,68 @@ export default function ViewAllFoods() {
           </tbody>
         </table>
       </div>
+
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Update Food Item</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group>
+              <Form.Label>Food Menu</Form.Label>
+              <Form.Control
+                type="text"
+                name="foodMenu"
+                value={updatedFood.foodMenu}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Food Type</Form.Label>
+              <Form.Control
+                type="text"
+                name="type"
+                value={updatedFood.type}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Price</Form.Label>
+              <Form.Control
+                type="text"
+                name="price"
+                value={updatedFood.price}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Day</Form.Label>
+              <Form.Control
+                type="text"
+                name="day"
+                value={updatedFood.day}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Food Image</Form.Label>
+              <Form.Control
+                type="file"
+                name="foodImage"
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleFormSubmit}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

@@ -1,52 +1,58 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from './Navbar';
-import '../assets/css/Style.css'; // Import your CSS file
+import '../assets/css/Style.css';
+import { useFoodsQuery } from '../components/api/ViewAllFoodApi';
+import { API } from '../config';
+
 const mainMenuItems = [
   { name: 'Home', link: '/' },
   { name: 'Login', link: '/login' }
 ];
 
 export default function Main() {
+  const { data: foods, isLoading, isError, error, refetch } = useFoodsQuery();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error: {error.message}</div>;
+  }
+
   return (
-    <div className='background-radial-gradient'>
-      <Navbar menuItems={mainMenuItems} />      <main className="main">
-        {/* Menu Section */}
+    <div className='background-radial-gradient' style={{ overflowY: 'auto', height: '100vh' }}>
+      <Navbar menuItems={mainMenuItems} />
+      <main className="main" style={{ padding: '20px' }}>
         <section>
           <div className="container">
-            <div className="tab-content">
-              <div>
-                <div className="tab-header text-center">
-                  <h3>Menu</h3>
+            <h1 style={{ color: 'white', textAlign: 'center', marginBottom: '20px' }}>Menu</h1>
+            <div className="row gy-5">
+              {foods.map((food: any) => (
+                <div className="col-lg-4" key={food.id}>
+                  <div className="card" style={{ padding: '15px' }}>
+                    <img src={`${API}${food.foodImage}`} className="card-img-top" alt="Food" />
+                    <div className="card-body" style={{ paddingTop: '20px', position: 'relative' }}>
+                      <h5 className="card-title">{food.foodMenu}</h5>
+                      <p className="card-text">
+                        <span>Type: {food.type}</span><br />
+                        <span>Price: {food.price}</span><br />
+                        <span>Day: {food.day}</span>
+                        <br />
+                        <br />
+                        
+                      </p>
+                     
+
+                      <Link to="/login" className="btn btn-success" style={{ position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)' }}>Add Card</Link>
+                    </div>
+                  </div>
                 </div>
-                <div className="row gy-5">
-                  {/* Menu Item */}
-                  <div className="col-lg-4">
-                    <img src="/assets/img/menu/menu-item-1.png" alt="Menu Item 1" />
-                    <h4>Magnam Tiste</h4>
-                    <p className="ingredients">Lorem, deren, trataro, filede, nerada</p>
-                    <p className="price">$5.95</p>
-                  </div>
-                  {/* Menu Item */}
-                  <div className="col-lg-4">
-                    <img src="/assets/img/menu/menu-item-2.png" alt="Menu Item 2" />
-                    <h4>Aut Luia</h4>
-                    <p className="ingredients">Lorem, deren, trataro, filede, nerada</p>
-                    <p className="price">$14.95</p>
-                  </div>
-                  {/* Menu Item */}
-                  <div className="col-lg-4">
-                    <img src="/assets/img/menu/menu-item-3.png" alt="Menu Item 3" />
-                    <h4>Est Eligendi</h4>
-                    <p className="ingredients">Lorem, deren, trataro, filede, nerada</p>
-                    <p className="price">$8.95</p>
-                  </div>
-                  {/* Repeat for other menu items */}
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </section>
-        {/* /Menu Section */}
       </main>
     </div>
   );

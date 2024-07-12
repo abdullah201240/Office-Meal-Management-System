@@ -39,7 +39,7 @@ export default function AddItems() {
         mutationFn: createItems,
         onSuccess: () => {
             alert('Item created successfully!');
-            navigate('/adminHome');
+            navigate('/admin/view-items');
         },
         onError: (error: Error) => {
             alert('Failed to create item. Please try again.');
