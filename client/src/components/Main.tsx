@@ -1,12 +1,15 @@
 import React from 'react';
 import Navbar from './Navbar';
 import '../assets/css/Style.css'; // Import your CSS file
+const mainMenuItems = [
+  { name: 'Home', link: '/' },
+  { name: 'Login', link: '/login' }
+];
 
 export default function Main() {
   return (
     <div className='background-radial-gradient'>
-      <Navbar />
-      <main className="main">
+      <Navbar menuItems={mainMenuItems} />      <main className="main">
         {/* Menu Section */}
         <section>
           <div className="container">
