@@ -13,6 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api', routes);
+app.use('/upload', express.static("upload"));
 
 // Error handling middleware
 app.use(errorHandler);
