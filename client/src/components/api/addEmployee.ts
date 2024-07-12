@@ -8,7 +8,7 @@ export interface EmployeeFormData {
   }
   
   export const createEmployee = async (newEmployee: EmployeeFormData): Promise<any> => {
-    const response = await fetch(`${API_BASE_URL}/signup`, {
+    const response = await fetch(`${API_BASE_URL}auth/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

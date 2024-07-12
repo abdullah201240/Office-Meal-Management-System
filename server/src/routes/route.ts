@@ -1,11 +1,11 @@
 import express from 'express';
-import { getUser, getUserById } from '../controller/userController';
-import upload from '../middleware/upload';
-import {addFoodItem,getAllItems} from '../controller/adminController'
+import { getUsers, getUserById, updateUser, deleteUser } from '../controller/userController';
+
 const router = express.Router();
 
-router.get('/users', getUser);
+router.get('/users', getUsers);
 router.get('/users/:id', getUserById);
+router.put('/users/:id', updateUser); 
+router.delete('/users/:id', deleteUser); 
 
 export default router;
-
