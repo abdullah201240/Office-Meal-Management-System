@@ -1,7 +1,6 @@
 import React, { ChangeEvent, FormEvent, useState } from 'react';
 import Navbar from '../Navbar';
 import { useAppDispatch } from '../hooks/adminLogin';
-
 import { adminMenuItems } from './AdminMenuItems';
 import { clearAdminAuth } from '../redux/adminAuthSlice';
 import { useNavigate } from 'react-router-dom';
@@ -55,9 +54,13 @@ export default function AddItems() {
                 <div className="form-container">
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
-                            <label htmlFor="menu">Menu</label>
+                        <div className="form-group">
+                            <label htmlFor="price">Food Manu</label>
+                            <input type="text" className="form-control" id="price" onChange={handleInputChange} />
+                        </div>
+                            <label htmlFor="menu">Type</label>
                             <select className="form-control" id="menu" onChange={handleInputChange}>
-                                <option value="">Select Menu</option>
+                                <option value="">Select Type</option>
                                 <option value="Dinner">Dinner</option>
                                 <option value="Lunch">Lunch</option>
                                 <option value="Breakfast">Breakfast</option>
