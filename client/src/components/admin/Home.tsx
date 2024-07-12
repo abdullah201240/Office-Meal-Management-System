@@ -37,6 +37,7 @@ export default function Home () {
     <div className='background-radial-gradient'>
        <Navbar menuItems={menuItems} />
       
+      
       <div className="admin-content">
         <h1 style={{ color: 'white', textAlign: 'center' }}>All User List</h1>
 
