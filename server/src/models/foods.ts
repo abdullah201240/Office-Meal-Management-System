@@ -3,7 +3,7 @@ import db from '../config/database';
 
 interface UserAttributes {
   id?: number;
-  foodManu: string;
+  foodMenu: string;
   type: string; 
   price: string;
   day: string;
@@ -11,16 +11,16 @@ interface UserAttributes {
   
 }
 
-class AddItems extends Model<UserAttributes> implements UserAttributes {
+class Food extends Model<UserAttributes> implements UserAttributes {
   public id!: number;
-  public foodManu!: string;
+  public foodMenu!: string;
   public type!: string;
   public price!: string;
   public day!: string; 
   public foodImage!: string; 
 }
 
-AddItems.init(
+Food.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -28,7 +28,7 @@ AddItems.init(
       autoIncrement: true,
       allowNull: false,
     },
-    foodManu: {
+    foodMenu: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -53,10 +53,10 @@ AddItems.init(
   },
   {
     sequelize: db,
-    modelName: 'addItem',
-    tableName: 'addItems',
+    modelName: 'food',
+    tableName: 'foods',
     timestamps: true,
   }
 );
 
-export default AddItems;
+export default Food;

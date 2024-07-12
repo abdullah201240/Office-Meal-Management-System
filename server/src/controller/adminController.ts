@@ -1,17 +1,17 @@
 import { Request, Response } from 'express';
-import AddItems from '../models/addItems';
+import Foods from '../models/foods';
 
 export const addFoodItem = async (req: Request, res: Response) => {
     try {
-        const { foodManu, type, price, day } = req.body;
+        const { foodMenu, type, price, day } = req.body;
         const foodImage = req.file?.path;
 
         if (!foodImage) {
             return res.status(400).json({ error: 'Food image is required' });
         }
 
-        const newFoodItem = await AddItems.create({
-            foodManu,
+        const newFoodItem = await Foods.create({
+            foodMenu,
             type,
             price,
             day,
@@ -27,7 +27,7 @@ export const addFoodItem = async (req: Request, res: Response) => {
 
 export const getAllItems = async (req: Request, res: Response) => {
     try {
-        const items = await AddItems.findAll();
+        const items = await Foods.findAll();
         res.status(200).json(items);
     } catch (error) {
         console.error('Error fetching items:', error);

@@ -1,21 +1,31 @@
-import React, { ChangeEvent, FormEvent, useState } from 'react';
-import Navbar from '../Navbar';
+import React, { useState } from 'react';
 import { useAppDispatch } from '../hooks/adminLogin';
-import { adminMenuItems } from './AdminMenuItems';
-import { clearAdminAuth } from '../redux/adminAuthSlice';
 import { useNavigate } from 'react-router-dom';
+import { clearAdminAuth } from '../redux/adminAuthSlice';
+import Navbar from '../Navbar';
+import { adminMenuItems } from './AdminMenuItems';
 import '../../assets/css/Style.css';
 import '../../assets/css/from.css';
+import { useMutation } from '@tanstack/react-query';
+import { createItems } from '../api/addItemsApi'; // Import the service function
+
+interface ItemsFormData {
+    foodMenu: string;
+    type: string;
+    price: string;
+    day: string;
+    foodImage: File | null;
+}
 
 export default function AddItems() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        
-        menu: '',
+    const [formData, setFormData] = useState<ItemsFormData>({
+        foodMenu: '',
+        type: '',
         price: '',
         day: '',
-        image: null
+        foodImage: null,
     });
 
     const handleLogout = () => {
@@ -25,41 +35,80 @@ export default function AddItems() {
 
     const menuItems = [...adminMenuItems, { name: 'Logout', onClick: handleLogout }];
 
-    function handleSubmit(event: FormEvent<HTMLFormElement>): void {
-        event.preventDefault();
-        console.log(formData);
-    }
+    const { mutate } = useMutation<void, Error, FormData>({
+        mutationFn: createItems,
+        onSuccess: () => {
+            alert('Item created successfully!');
+            navigate('/adminHome');
+        },
+        onError: (error: Error) => {
+            alert('Failed to create item. Please try again.');
+        },
+    });
 
-    function handleInputChange(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>): void {
-        const { id, value } = event.target;
-        if (event.target instanceof HTMLInputElement && event.target.type === 'file') {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const formDataToSubmit = new FormData();
+        formDataToSubmit.append('foodMenu', formData.foodMenu);
+        formDataToSubmit.append('type', formData.type);
+        formDataToSubmit.append('price', formData.price);
+        formDataToSubmit.append('day', formData.day);
+        if (formData.foodImage) {
+            formDataToSubmit.append('foodImage', formData.foodImage);
+        }
+
+        try {
+            await mutate(formDataToSubmit);
+        } catch (error) {
+            console.error('Error creating item:', error);
+            alert('Failed to create item. Please try again.');
+        }
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { id, value } = e.target;
+        if (e.target instanceof HTMLInputElement && e.target.type === 'file') {
             setFormData({
                 ...formData,
-                [id]: event.target.files ? event.target.files[0] : null
+                [id]: e.target.files ? e.target.files[0] : null,
             });
         } else {
             setFormData({
                 ...formData,
-                [id]: value
+                [id]: value,
             });
         }
-    }
+    };
 
     return (
         <div className='background-radial-gradient'>
             <Navbar menuItems={menuItems} />
-            <br/>
+            <br />
             <h1 style={{ color: 'white', textAlign: 'center' }}>Add Items</h1>
             <div className="app-container">
                 <div className="form-container">
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
-                        <div className="form-group">
-                            <label htmlFor="price">Food Manu</label>
-                            <input type="text" className="form-control" id="price" onChange={handleInputChange} />
+                            <label htmlFor="foodMenu">Food Menu</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="foodMenu"
+                                value={formData.foodMenu}
+                                onChange={handleInputChange}
+                                required
+                            />
                         </div>
-                            <label htmlFor="menu">Type</label>
-                            <select className="form-control" id="menu" onChange={handleInputChange}>
+                        <div className="form-group">
+                            <label htmlFor="type">Type</label>
+                            <select
+                                className="form-control"
+                                id="type"
+                                value={formData.type}
+                                onChange={handleInputChange}
+                                required
+                            >
                                 <option value="">Select Type</option>
                                 <option value="Dinner">Dinner</option>
                                 <option value="Lunch">Lunch</option>
@@ -68,11 +117,24 @@ export default function AddItems() {
                         </div>
                         <div className="form-group">
                             <label htmlFor="price">Price</label>
-                            <input type="text" className="form-control" id="price" onChange={handleInputChange} />
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="price"
+                                value={formData.price}
+                                onChange={handleInputChange}
+                                required
+                            />
                         </div>
                         <div className="form-group">
                             <label htmlFor="day">Day</label>
-                            <select className="form-control" id="day" onChange={handleInputChange}>
+                            <select
+                                className="form-control"
+                                id="day"
+                                value={formData.day}
+                                onChange={handleInputChange}
+                                required
+                            >
                                 <option value="">Select Day</option>
                                 <option value="Monday">Monday</option>
                                 <option value="Tuesday">Tuesday</option>
@@ -84,13 +146,19 @@ export default function AddItems() {
                             </select>
                         </div>
                         <div className="form-group">
-                            <label htmlFor="image">Food Image</label>
-                            <input type="file" className="form-control" id="image" onChange={handleInputChange} />
+                            <label htmlFor="foodImage">Food Image</label>
+                            <input
+                                type="file"
+                                className="form-control"
+                                id="foodImage"
+                                onChange={handleInputChange}
+                                required
+                            />
                         </div>
                         <button type="submit" className="btn btn-primary">Submit</button>
                     </form>
                 </div>
             </div>
         </div>
-    )
+    );
 }

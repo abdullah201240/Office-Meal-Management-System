@@ -9,7 +9,7 @@ import AdminHome from './admin/Home';
 import AdminProtectedRoute from './AdminProtectedRoute';
 import AddEmployee from './admin/AddEmployee';
 import AddItems from './admin/AddItems';
-
+import ViewAllFoods from './admin/ViewAllFoods';
 export default function NavigationStack() {
   return (
     <div>
@@ -61,7 +61,19 @@ export default function NavigationStack() {
             </>
           }
         />
-        
+       
+
+        <Route
+          path="/admin/view-items"
+          element={
+            <>
+              
+              <AdminProtectedRoute>
+                <ViewAllFoods />
+              </AdminProtectedRoute>
+            </>
+          }
+        />
 
         
         <Route path='*' element={<Navigate to="/main" />} />
