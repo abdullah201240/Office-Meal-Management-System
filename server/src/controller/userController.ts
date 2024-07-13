@@ -153,3 +153,21 @@ export async function viewCart(req: Request, res: Response) {
     res.status(500).json({ error: 'Failed to fetch cart items' });
   }
 }
+export async function deleteFromCart(req: Request, res: Response) {
+  const cartId = parseInt(req.params.id, 10);
+
+  try {
+    const cartItem = await Cart.findByPk(cartId);
+
+    if (!cartItem) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+
+    await cartItem.destroy();
+
+    res.json({ message: 'Cart item deleted successfully' });
+  } catch (error) {
+    console.error(`Error deleting cart item: id ${cartId}:`, error);
+    res.status(500).json({ error: 'Failed to delete cart item' });
+  }
+}
