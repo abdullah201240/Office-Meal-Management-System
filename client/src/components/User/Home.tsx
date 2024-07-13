@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/useLogin';
 import { clearAuth } from '../redux/authSlice';
-import { Link, useNavigate } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
 import { userMenuItems } from './UserMenuItems';
 import { useFoodsQuery } from '../api/ViewAllFoodApi';
@@ -18,7 +18,7 @@ export default function Home() {
     navigate('/login');
   };
 
-  const { data: foods, isLoading, isError, error, refetch } = useFoodsQuery();
+  const { data: foods, isLoading, isError, error } = useFoodsQuery();
 
   const handleAddToCart = async (foodId: any) => {
     try {
@@ -37,6 +37,7 @@ export default function Home() {
 
       if (response.ok) {
         alert('Item added to cart successfully!');
+        navigate('/cart');
       } else {
         alert(`Error: ${result.error}`);
       }
