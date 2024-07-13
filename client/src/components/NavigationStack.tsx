@@ -12,6 +12,7 @@ import AddItems from './admin/AddItems';
 import ViewAllFoods from './admin/ViewAllFoods';
 import Cart from './User/Cart';
 import Order from './User/Order';
+import ViewAllOrder from './admin/ViewAllOrder';
 export default function NavigationStack() {
   return (
     <div>
@@ -99,6 +100,17 @@ export default function NavigationStack() {
           }
         />
         
+        <Route
+          path="/admin/order-list"
+          element={
+            <>
+              
+              <AdminProtectedRoute>
+                <ViewAllOrder />
+              </AdminProtectedRoute>
+            </>
+          }
+        />
 
         
         <Route path='*' element={<Navigate to="/main" />} />
