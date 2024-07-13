@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import User from '../models/user';
-
+import Cart from '../models/cart';
+import Food from '../models/foods';
 // Get all users
 export async function getUsers(req: Request, res: Response) {
   try {
@@ -68,5 +69,47 @@ export async function deleteUser(req: Request, res: Response) {
   } catch (error) {
     console.error(`Error deleting user with id ${userId}:`, error);
     res.status(500).json({ error: 'Failed to delete user' });
+  }
+}
+
+// Add item to cart
+
+export async function addToCart(req: Request, res: Response) {
+  try {
+    const { foodId, userEmail } = req.body;
+
+    const user = await User.findOne({ where: { email: userEmail } });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const { id, name } = user;
+
+    const food = await Food.findOne({ where: { id: foodId } });
+
+    if (!food) {
+      return res.status(404).json({ error: 'Food not found' });
+    }
+
+    const { foodMenu, type, price, day,foodImage } = food;
+
+    const cartItem = await Cart.create({
+      foodId,
+      foodMenu,
+      type,
+      price,
+      day,
+      foodImage,
+      userId: id,
+      userName: name,
+      userEmail,
+      status: 'Pending',
+    });
+
+    res.json(cartItem);
+  } catch (error) {
+    console.error('Error adding item to cart:', error);
+    res.status(500).json({ error: 'Failed to add item to cart' });
   }
 }
