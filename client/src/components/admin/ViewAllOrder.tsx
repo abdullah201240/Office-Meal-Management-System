@@ -17,16 +17,6 @@ export default function ViewAllOrder() {
     const navigate = useNavigate();
     const { data: foods, isLoading, isError, error, refetch } = useFoodsQuery();
 
-    const [showModal, setShowModal] = useState(false);
-    const [selectedFood, setSelectedFood] = useState<any>(null);
-    const [updatedFood, setUpdatedFood] = useState({
-        foodMenu: '',
-        type: '',
-        price: '',
-        day: '',
-        foodImage: null,
-    });
-
     const handleLogout = () => {
         dispatch(clearAdminAuth());
         navigate('/adminLogin');
@@ -34,51 +24,14 @@ export default function ViewAllOrder() {
 
     const menuItems = [...adminMenuItems, { name: 'Logout', onClick: handleLogout }];
 
-    const handleUpdate = (food: any) => {
-        setSelectedFood(food);
-        setUpdatedFood({
-            foodMenu: food.foodMenu,
-            type: food.type,
-            price: food.price,
-            day: food.day,
-            foodImage: null,
-        });
-        setShowModal(true);
-    };
-
-    const handleDelete = async (foodId: string) => {
+    const handleStatusChange = async (foodId: string, status: string) => {
         try {
-            await axios.delete(`${API}api/admin/delete-food-item/${foodId}`);
+            await axios.put(`${API}api/admin/order/${foodId}/status`, { status });
             refetch();
+            alert(`Order status updated to ${status}`);
         } catch (error) {
-            console.error('Error deleting food item:', error);
-        }
-    };
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value, files } = e.target;
-        setUpdatedFood((prev) => ({
-            ...prev,
-            [name]: files ? files[0] : value,
-        }));
-    };
-
-    const handleFormSubmit = async () => {
-        const formData = new FormData();
-        formData.append('foodMenu', updatedFood.foodMenu);
-        formData.append('type', updatedFood.type);
-        formData.append('price', updatedFood.price);
-        formData.append('day', updatedFood.day);
-        if (updatedFood.foodImage) {
-            formData.append('foodImage', updatedFood.foodImage);
-        }
-
-        try {
-            await axios.put(`${API}api/admin/update-food-item/${selectedFood.id}`, formData);
-            setShowModal(false);
-            refetch();
-        } catch (error) {
-            console.error('Error updating food item:', error);
+            console.error('Error updating order status:', error);
+            alert('Failed to update order status');
         }
     };
 
@@ -102,7 +55,7 @@ export default function ViewAllOrder() {
                             <th scope="col">Food Image</th>
                             <th scope="col">Status</th>
                             <th scope="col">Order Date Time</th>
-
+                            <th scope="col">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -138,13 +91,13 @@ export default function ViewAllOrder() {
                                 <td className="btn-group">
                                     <button
                                         className="btn btn-success btn-sm"
-                                        onClick={() => handleUpdate(food)}
+                                        onClick={() => handleStatusChange(food.id, 'delivered')}
                                     >
                                         Delivered
                                     </button>
                                     <button
                                         className="btn btn-danger btn-sm ms-2"
-                                        onClick={() => handleDelete(food.id)}
+                                        onClick={() => handleStatusChange(food.id, 'cancelled')}
                                     >
                                         Cancel
                                     </button>
@@ -153,9 +106,7 @@ export default function ViewAllOrder() {
                         ))}
                     </tbody>
                 </table>
-
             </div>
-
         </div>
     );
 }

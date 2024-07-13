@@ -7,7 +7,6 @@ import { userMenuItems } from './UserMenuItems';
 import { useFoodsQuery } from '../api/ViewAllFoodApi';
 import { API } from '../../config';
 import '../../assets/css/Style.css';
-
 export default function Home() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();

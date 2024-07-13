@@ -97,6 +97,7 @@ export default function Cart() {
                     <button className="btn btn-success" onClick={handlePlaceOrder}>Place Order</button>
                 </div>
             </div>
+
         </div>
     );
 }
