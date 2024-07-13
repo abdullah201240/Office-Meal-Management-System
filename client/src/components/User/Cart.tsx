@@ -41,6 +41,8 @@ export default function Cart() {
         console.log('Order placed');
     };
 
+    const totalAmount = Number(calculateTotal());
+
     return (
         <div className="background-radial-gradient" style={{ overflowY: 'scroll' }}>
             <Navbar menuItems={menuItems} />
@@ -89,7 +91,7 @@ export default function Cart() {
                     <h2 style={{ color: 'white' }}>
                         Total Amount: 
                         <FontAwesomeIcon icon={faBangladeshiTakaSign} style={{ marginLeft: '5px', marginRight: '5px' }} />
-                        {calculateTotal().toFixed(2)}
+                        {totalAmount.toFixed(2)}
                     </h2>
                     <br/>
                     <button className="btn btn-success" onClick={handlePlaceOrder}>Place Order</button>
