@@ -251,3 +251,25 @@ export async function placeOrder(req: Request, res: Response) {
     res.status(500).json({ error: 'Failed to place order' });
   }
 }
+
+// View Order items for a user by email
+export async function viewOrder(req: Request, res: Response) {
+  const userEmail = req.query.userEmail as string;
+
+  if (!userEmail) {
+    return res.status(400).json({ error: 'User email is required' });
+  }
+
+  try {
+    const orderItems = await Order.findAll({ where: { userEmail } });
+
+    if (!orderItems.length) {
+      return res.status(404).json({ error: 'No items found in order for this user' });
+    }
+
+    res.json(orderItems);
+  } catch (error) {
+    console.error('Error fetching order items:', error);
+    res.status(500).json({ error: 'Failed to fetch order items' });
+  }
+}

@@ -37,6 +37,8 @@ export default function Order() {
                                 <th scope="col">Price (BDT)</th>
                                 <th scope="col">Day</th>
                                 <th scope="col">Food Image</th>
+                                <th scope="col">Status</th>
+
                                 
                             </tr>
                         </thead>
@@ -52,7 +54,7 @@ export default function Order() {
                                     </td>
                                     <td>{food.day}</td>
                                     <td><img src={`${API}${food.foodImage}`} alt="Food" style={{ width: '50px', height: '50px' }} /></td>
-
+                                    <td>{food.status}</td>
                                 </tr>
                             ))}
                         </tbody>
