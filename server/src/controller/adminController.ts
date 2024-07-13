@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Foods from '../models/foods';
+import Order from '../models/order';
 
 export const addFoodItem = async (req: Request, res: Response) => {
     try {
@@ -73,3 +74,20 @@ export const updateFoodItem = async (req: Request, res: Response) => {
         res.status(500).json({ error: 'Failed to update food item' });
     }
 };
+// View Order items 
+export async function viewOrder(req: Request, res: Response) {
+    
+    try {
+      const orderItems = await Order.findAll();
+  
+      if (!orderItems.length) {
+        return res.status(404).json({ error: 'No items found in order' });
+      }
+  
+      res.json(orderItems);
+    } catch (error) {
+      console.error('Error fetching order items:', error);
+      res.status(500).json({ error: 'Failed to fetch order items' });
+    }
+  }
+  
