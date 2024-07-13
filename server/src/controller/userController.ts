@@ -132,3 +132,24 @@ export async function addToCart(req: Request, res: Response) {
     res.status(500).json({ error: 'Failed to add item to cart' });
   }
 }
+// View cart items for a user by email
+export async function viewCart(req: Request, res: Response) {
+  const userEmail = req.query.userEmail as string;
+
+  if (!userEmail) {
+    return res.status(400).json({ error: 'User email is required' });
+  }
+
+  try {
+    const cartItems = await Cart.findAll({ where: { userEmail } });
+
+    if (!cartItems.length) {
+      return res.status(404).json({ error: 'No items found in cart for this user' });
+    }
+
+    res.json(cartItems);
+  } catch (error) {
+    console.error('Error fetching cart items:', error);
+    res.status(500).json({ error: 'Failed to fetch cart items' });
+  }
+}
