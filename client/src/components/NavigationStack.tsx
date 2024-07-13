@@ -10,6 +10,7 @@ import AdminProtectedRoute from './AdminProtectedRoute';
 import AddEmployee from './admin/AddEmployee';
 import AddItems from './admin/AddItems';
 import ViewAllFoods from './admin/ViewAllFoods';
+import Cart from './User/Cart';
 export default function NavigationStack() {
   return (
     <div>
@@ -74,6 +75,18 @@ export default function NavigationStack() {
             </>
           }
         />
+        <Route
+          path="/cart"
+          element={
+            <>
+              
+              <ProtectedRoute>
+              <Cart/>
+              </ProtectedRoute>
+            </>
+          }
+        />
+        
 
         
         <Route path='*' element={<Navigate to="/main" />} />

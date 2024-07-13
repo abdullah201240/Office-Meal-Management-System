@@ -6,7 +6,6 @@ import Navbar from '../Navbar';
 import { userMenuItems } from './UserMenuItems';
 import { useFoodsQuery } from '../api/ViewAllFoodApi';
 import { API } from '../../config';
-
 import '../../assets/css/Style.css';
 
 export default function Home() {
@@ -20,6 +19,32 @@ export default function Home() {
   };
 
   const { data: foods, isLoading, isError, error, refetch } = useFoodsQuery();
+
+  const handleAddToCart = async (foodId: any) => {
+    try {
+      const response = await fetch(`${API}api/user/cart`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          foodId,
+          userEmail: email,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert('Item added to cart successfully!');
+      } else {
+        alert(`Error: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Error adding item to cart:', error);
+      alert('Failed to add item to cart');
+    }
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -54,7 +79,12 @@ export default function Home() {
                         <span>Day: {food.day}</span>
                         <br /><br />
                       </p>
-                      <Link to="/login" className="btn btn-success" style={{ position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)' }}>Add Card</Link>
+                      <button 
+                        onClick={() => handleAddToCart(food.id)} 
+                        className="btn btn-success" 
+                        style={{ position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)' }}>
+                        Add to Cart
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -78,7 +108,6 @@ export default function Home() {
                         <span>Day: {food.day}</span>
                         <br /><br />
                       </p>
-                      
                     </div>
                   </div>
                 </div>
