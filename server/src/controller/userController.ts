@@ -73,7 +73,6 @@ export async function deleteUser(req: Request, res: Response) {
 }
 
 // Add item to cart
-
 export async function addToCart(req: Request, res: Response) {
   try {
     const { foodId, userEmail } = req.body;
@@ -92,7 +91,27 @@ export async function addToCart(req: Request, res: Response) {
       return res.status(404).json({ error: 'Food not found' });
     }
 
-    const { foodMenu, type, price, day,foodImage } = food;
+    const { type } = food;
+
+    let currentTime = new Date().getHours();
+    let acceptOrder = false;
+
+    // Determine if order can be accepted based on food type and current time
+    if (type === 'Breakfast' && currentTime >= 6 && currentTime < 8) {
+      acceptOrder = true;
+    } else if (type === 'Lunch' && currentTime >= 6 && currentTime < 12) {
+      acceptOrder = true;
+    } else if (type === 'Dinner' && currentTime < 19) {
+      acceptOrder = true;
+    }
+
+    // If conditions are not met, return an error response
+    if (!acceptOrder) {
+      return res.status(400).json({ error: 'Cannot place order at this time' });
+    }
+
+    // If conditions are met, create the cart item
+    const { foodMenu, price, day, foodImage } = food;
 
     const cartItem = await Cart.create({
       foodId,
