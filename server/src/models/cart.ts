@@ -1,4 +1,4 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, Sequelize } from 'sequelize';
 import sequelize from '../config/database'; 
 
 interface CartAttributes {
@@ -27,6 +27,8 @@ class Cart extends Model<CartAttributes> implements CartAttributes {
   public userName!: string;
   public userEmail!: string;
   public status!: string;
+  public static sequelize: Sequelize;
+  
 
 }
 

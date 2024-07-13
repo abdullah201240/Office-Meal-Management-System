@@ -20,7 +20,7 @@ export default function Cart() {
         navigate('/login');
     };
 
-    const { data: foods, isLoading, isError, error, refetch } = useFoodsQuery(userEmail);
+    const { data: foods, isError, error, refetch } = useFoodsQuery(userEmail);
 
     const menuItems = [...userMenuItems, { name: 'Logout', onClick: handleLogout }];
 
@@ -46,7 +46,6 @@ export default function Cart() {
             <Navbar menuItems={menuItems} />
             <div className="admin-content">
                 <h1 style={{ color: 'white', textAlign: 'center' }}>Cart</h1>
-                {isLoading && <p>Loading...</p>}
                 {isError && <p>Error: {error.message}</p>}
                 <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
                     <table className="table table-dark table-striped table-bordered">

@@ -11,6 +11,7 @@ import AddEmployee from './admin/AddEmployee';
 import AddItems from './admin/AddItems';
 import ViewAllFoods from './admin/ViewAllFoods';
 import Cart from './User/Cart';
+import Order from './User/Order';
 export default function NavigationStack() {
   return (
     <div>
@@ -82,6 +83,17 @@ export default function NavigationStack() {
               
               <ProtectedRoute>
               <Cart/>
+              </ProtectedRoute>
+            </>
+          }
+        />
+         <Route
+          path="/order"
+          element={
+            <>
+              
+              <ProtectedRoute>
+              <Order/>
               </ProtectedRoute>
             </>
           }

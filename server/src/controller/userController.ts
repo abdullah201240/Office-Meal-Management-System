@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import User from '../models/user';
 import Cart from '../models/cart';
 import Food from '../models/foods';
+import Order from '../models/order';
 // Get all users
 export async function getUsers(req: Request, res: Response) {
   try {
@@ -141,7 +142,7 @@ export async function viewCart(req: Request, res: Response) {
   }
 
   try {
-    const cartItems = await Cart.findAll({ where: { userEmail } });
+    const cartItems = await Cart.findAll({ where: { userEmail, status: 'Pending' } });
 
     if (!cartItems.length) {
       return res.status(404).json({ error: 'No items found in cart for this user' });
@@ -153,6 +154,9 @@ export async function viewCart(req: Request, res: Response) {
     res.status(500).json({ error: 'Failed to fetch cart items' });
   }
 }
+
+// delete From Cart by id
+
 export async function deleteFromCart(req: Request, res: Response) {
   const cartId = parseInt(req.params.id, 10);
 
@@ -169,5 +173,81 @@ export async function deleteFromCart(req: Request, res: Response) {
   } catch (error) {
     console.error(`Error deleting cart item: id ${cartId}:`, error);
     res.status(500).json({ error: 'Failed to delete cart item' });
+  }
+}
+
+// placeOrder
+
+export async function placeOrder(req: Request, res: Response) {
+  const { userEmail } = req.body;
+
+  try {
+    // Check if the user exists
+    const user = await User.findOne({ where: { email: userEmail } });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Find pending items in the user's cart
+    const cartItems = await Cart.findAll({ where: { userEmail, status: 'Pending' } });
+    if (!cartItems.length) {
+      return res.status(404).json({ error: 'No pending items found in cart for this user' });
+    }
+
+    // Start a transaction for atomicity
+    const transaction = await Cart.sequelize.transaction();
+
+    try {
+      // Prepare arrays to store individual item details
+      const foodIds: number[] = [];
+      const foodMenus: string[] = [];
+      const foodTypes: string[] = [];
+      const foodDays: string[] = [];
+      const foodImages: string[] = [];
+      let totalPrice = 0;
+
+
+      // Collect item details
+      cartItems.forEach(item => {
+        foodIds.push(item.foodId);
+        foodMenus.push(item.foodMenu);
+        foodTypes.push(item.type);
+        foodDays.push(item.day);
+        foodImages.push(item.foodImage);
+        totalPrice += parseFloat(item.price);
+      });
+
+      // Create a new order with individual item details
+      const order = await Order.create({
+        userId: user.id,
+        userEmail: user.email,
+        userName: user.name,
+        foodId: foodIds.join(','), // Store as comma-separated string or adjust to array as needed
+        foodMenu: foodMenus.join(','),
+        type: foodTypes.join(','),
+        day: foodDays.join(','),
+        foodImage: foodImages.join(','),
+        price: totalPrice,
+        status: 'Pending',
+      }, { transaction });
+
+      // Update status of cart items to 'Ordered'
+      await Promise.all(cartItems.map(async (cartItem) => {
+        await cartItem.update({ status: 'Ordered' }, { transaction });
+      }));
+
+      // Commit the transaction if everything succeeds
+      await transaction.commit();
+
+      // Respond with success message and order ID
+      res.json({ message: 'Order placed successfully', orderId: order.id });
+    } catch (error) {
+      // Rollback transaction on error
+      await transaction.rollback();
+      throw error; // Throw error to handle it in the catch block below
+    }
+  } catch (error) {
+    console.error('Error placing order:', error);
+    res.status(500).json({ error: 'Failed to place order' });
   }
 }
